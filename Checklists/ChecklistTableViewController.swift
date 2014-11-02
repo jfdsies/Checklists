@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ChecklistTableViewController: UITableViewController {
+class ChecklistTableViewController: UITableViewController, AddItemViewControllerDelegate {
     var row0checked = false
     var row1checked = false
     var row2checked = false
@@ -16,6 +16,32 @@ class ChecklistTableViewController: UITableViewController {
     var row4checked = false
     
     var items: [ChecklistItem]
+        
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "AddItem" {
+            let navigationController = segue.destinationViewController as UINavigationController
+            
+            let controller = navigationController.topViewController as AddItemTableViewController
+            
+            controller.delegate = self
+        }
+    }
+    
+    func addItemViewControllerDidCancel(controller: AddItemTableViewController) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func addItemViewController(controller: AddItemTableViewController, didFinishAddingItem item: ChecklistItem) {
+        let newRowIndex = items.count
+        
+        items.append(item)
+        
+        let indexPath = NSIndexPath(forRow: newRowIndex, inSection: 0)
+        let indexPaths = [indexPath]
+        tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+        
+        dismissViewControllerAnimated(true, completion: nil)
+    }
     
     required init(coder aDecoder: NSCoder) {
         items = [ChecklistItem]()
@@ -46,6 +72,13 @@ class ChecklistTableViewController: UITableViewController {
         items.append(row4item)
         
         super.init(coder: aDecoder)
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        items.removeAtIndex(indexPath.row)
+        
+        let indexPaths = [indexPath]
+        tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
     }
     
     override func viewDidLoad() {
