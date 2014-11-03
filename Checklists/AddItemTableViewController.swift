@@ -1,5 +1,5 @@
 //
-//  AddItemTableViewController.swift
+//  ItemDetailViewController.swift
 //  Checklists
 //
 //  Created by sora on 14/10/30.
@@ -9,13 +9,15 @@
 import UIKit
 
 protocol AddItemViewControllerDelegate: class {
-    func addItemViewControllerDidCancel(controller: AddItemTableViewController)
-    func addItemViewController(controller: AddItemTableViewController, didFinishAddingItem item: ChecklistItem)
+    func addItemViewControllerDidCancel(controller: ItemDetailViewController)
+    func addItemViewController(controller: ItemDetailViewController, didFinishAddingItem item: ChecklistItem)
+    func addItemViewController(controller: ItemDetailViewController, didFinishEditingItem item: ChecklistItem)
 }
 
-class AddItemTableViewController: UITableViewController, UITextFieldDelegate {
+class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     
     weak var delegate: AddItemViewControllerDelegate?
+    var itemToEdit: ChecklistItem?
 
     @IBOutlet weak var textFile: UITextField!
     @IBOutlet weak var doneBarButton: UIBarButtonItem!
@@ -24,11 +26,15 @@ class AddItemTableViewController: UITableViewController, UITextFieldDelegate {
         delegate?.addItemViewControllerDidCancel(self)
     }
     @IBAction func done(sender: AnyObject) {
-        let item = ChecklistItem()
-        item.text = textFile.text
-        item.checked = false
-        
-        delegate?.addItemViewController(self, didFinishAddingItem: item)
+        if let item = itemToEdit {
+            item.text = textFile.text
+            delegate?.addItemViewController(self, didFinishEditingItem: item)
+        } else {
+            let item = ChecklistItem()
+            item.text = textFile.text
+            item.checked = false
+            delegate?.addItemViewController(self, didFinishAddingItem: item)
+        }
     }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
@@ -47,6 +53,14 @@ class AddItemTableViewController: UITableViewController, UITextFieldDelegate {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        
+        tableView.rowHeight = 44
+        
+        if let item = itemToEdit {
+            title = "Edit Item"
+            textFile.text = item.text
+            doneBarButton.enabled = true
+        }
     }
 
     override func didReceiveMemoryWarning() {
