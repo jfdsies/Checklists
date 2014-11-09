@@ -1,55 +1,54 @@
 //
-//  ItemDetailViewController.swift
+//  ListDatailTableViewController.swift
 //  Checklists
 //
-//  Created by sora on 14/10/30.
+//  Created by sora on 14/11/9.
 //  Copyright (c) 2014年 sora. All rights reserved.
 //
 
 import UIKit
 
-protocol AddItemViewControllerDelegate: class {
-    func addItemViewControllerDidCancel(controller: ItemDetailViewController)
-    func addItemViewController(controller: ItemDetailViewController, didFinishAddingItem item: ChecklistItem)
-    func addItemViewController(controller: ItemDetailViewController, didFinishEditingItem item: ChecklistItem)
+protocol ListDetailViewControllerDelegate: class {
+    func listDetailViewControllerDidCancel(controller: ListDatailTableViewController)
+    func listDetailViewController(controller: ListDatailTableViewController, didFinishAddingChecklist checklist: Checklist)
+    func listDetailViewController(controller: ListDatailTableViewController, didFinishEditingChecklist checklist: Checklist)
 }
 
-class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
+class ListDatailTableViewController: UITableViewController, UITextFieldDelegate {
+    weak var delegate: ListDetailViewControllerDelegate?
+    var checklistToEdit: Checklist?
     
-    weak var delegate: AddItemViewControllerDelegate?
-    var itemToEdit: ChecklistItem?
-
-    @IBOutlet weak var textFile: UITextField!
     @IBOutlet weak var doneBarButton: UIBarButtonItem!
-    
+    @IBOutlet weak var textField: UITextField!
     @IBAction func cancel(sender: AnyObject) {
-        delegate?.addItemViewControllerDidCancel(self)
+        delegate?.listDetailViewControllerDidCancel(self)
     }
     @IBAction func done(sender: AnyObject) {
-        if let item = itemToEdit {
-            item.text = textFile.text
-            delegate?.addItemViewController(self, didFinishEditingItem: item)
+        if let checklist = checklistToEdit {
+            checklist.name = textField.text
+            delegate?.listDetailViewController(self, didFinishEditingChecklist: checklist)
         } else {
-            let item = ChecklistItem()
-            item.text = textFile.text
-            item.checked = false
-            delegate?.addItemViewController(self, didFinishAddingItem: item)
+            let checklist = Checklist(name: textField.text)
+            delegate?.listDetailViewController(self, didFinishAddingChecklist: checklist)
         }
     }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         let oldText: NSString = textField.text
         let newText: NSString = oldText.stringByReplacingCharactersInRange(range, withString: string)
-        
+
         doneBarButton.enabled = (newText.length > 0)
+//        doneBarButton.enabled = true
+        
         return true
+
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        textFile.becomeFirstResponder()
+        textField.becomeFirstResponder()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -58,12 +57,11 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
         tableView.rowHeight = 44
         
-        if let item = itemToEdit {
-            title = "Edit Item"
-            textFile.text = item.text
+        if let checklist = checklistToEdit {
+            title = "Edit Checklist"
+            textField.text = checklist.name
             doneBarButton.enabled = true
         }
     }
@@ -74,17 +72,9 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     }
 
     // MARK: - Table view data source
-
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
-        // Return the number of sections.
-        return 1
-    }
-
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
-        // Return the number of rows in the section.
-        return 1
+    
+    override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+        return nil
     }
 
     /*
