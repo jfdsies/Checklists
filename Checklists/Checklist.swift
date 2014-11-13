@@ -32,6 +32,7 @@ class Checklist: NSObject, NSCoding {
                 count += 1
             }
         }
+        print(count)
         return count
     }
     

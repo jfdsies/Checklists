@@ -54,6 +54,12 @@ class DataModel {
         data.writeToFile(dataFilePath(), atomically: true)
     }
     
+    func sortChecklists() {
+        lists.sort({ checklist1, checklist2 in return
+            checklist1.name.localizedStandardCompare(checklist2.name) == NSComparisonResult.OrderedAscending
+        })
+    }
+    
     func loadChecklists() {
         let path = dataFilePath()
         if NSFileManager.defaultManager().fileExistsAtPath(path) {
@@ -61,6 +67,7 @@ class DataModel {
                 let unarchiver = NSKeyedUnarchiver(forReadingWithData: data)
                 lists = unarchiver.decodeObjectForKey("Checklists") as [Checklist]
                 unarchiver.finishDecoding()
+                sortChecklists()
             }
         }
     }
