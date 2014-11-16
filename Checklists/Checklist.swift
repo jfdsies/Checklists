@@ -14,10 +14,16 @@ class Checklist: NSObject, NSCoding {
     
     init(name: String) {
         self.name = name
-        iconName = "Appointments"
+        iconName = "No Icon"
         super.init()
     }
     
+    init(name: String, iconName: String) {
+        self.name = name
+        self.iconName = iconName
+        super.init()
+    }
+
     required init(coder aDecoder: NSCoder) {
         name = aDecoder.decodeObjectForKey("Name") as String
         items = aDecoder.decodeObjectForKey("Items") as [ChecklistItem]
