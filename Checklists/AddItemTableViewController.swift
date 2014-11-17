@@ -18,7 +18,10 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     
     weak var delegate: AddItemViewControllerDelegate?
     var itemToEdit: ChecklistItem?
+    var dueDate = NSDate()
 
+    @IBOutlet weak var dueDateLabel: UILabel!
+    @IBOutlet weak var shouldRemindSwitch: UISwitch!
     @IBOutlet weak var textFile: UITextField!
     @IBOutlet weak var doneBarButton: UIBarButtonItem!
     
@@ -28,11 +31,15 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     @IBAction func done(sender: AnyObject) {
         if let item = itemToEdit {
             item.text = textFile.text
+            item.shouldRemind = shouldRemindSwitch.on
+            item.dueDate = dueDate
             delegate?.addItemViewController(self, didFinishEditingItem: item)
         } else {
             let item = ChecklistItem()
             item.text = textFile.text
             item.checked = false
+            item.shouldRemind = shouldRemindSwitch.on
+            item.dueDate = dueDate
             delegate?.addItemViewController(self, didFinishAddingItem: item)
         }
     }
@@ -43,6 +50,13 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
         
         doneBarButton.enabled = (newText.length > 0)
         return true
+    }
+    
+    func updateDueDateLabel(){
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .MediumStyle
+        formatter.timeStyle = .ShortStyle
+        dueDateLabel.text = formatter.stringFromDate(dueDate)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -65,7 +79,11 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
             title = "Edit Item"
             textFile.text = item.text
             doneBarButton.enabled = true
+            shouldRemindSwitch.on = item.shouldRemind
+            dueDate = item.dueDate
         }
+        
+        updateDueDateLabel()
     }
 
     override func didReceiveMemoryWarning() {
