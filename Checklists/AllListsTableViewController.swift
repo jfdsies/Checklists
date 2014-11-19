@@ -11,7 +11,7 @@ import UIKit
 class AllListsTableViewController: UITableViewController, ListDetailViewControllerDelegate, UINavigationControllerDelegate {
     
     var dataModel: DataModel!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -21,7 +21,7 @@ class AllListsTableViewController: UITableViewController, ListDetailViewControll
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
-
+    
     override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
         let navigationController = storyboard?.instantiateViewControllerWithIdentifier("ListNavigationController") as UINavigationController
         

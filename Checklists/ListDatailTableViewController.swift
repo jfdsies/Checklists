@@ -18,7 +18,6 @@ class ListDatailTableViewController: UITableViewController, UITextFieldDelegate,
     weak var delegate: ListDetailViewControllerDelegate?
     var checklistToEdit: Checklist?
     var iconName = "Folder"
-    var datePickerVisible = false
     
     @IBOutlet weak var iconImageView: UIImageView!
     @IBOutlet weak var doneBarButton: UIBarButtonItem!
@@ -37,12 +36,6 @@ class ListDatailTableViewController: UITableViewController, UITextFieldDelegate,
         }
     }
     
-    func showDatePicker() {
-        datePickerVisible = true
-        let indexPathDatePicker = NSIndexPath(forRow: 2, inSection: 1)
-        tableView.insertRowsAtIndexPaths([indexPathDatePicker], withRowAnimation: .Fade)
-    }
-    
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         let oldText: NSString = textField.text
         let newText: NSString = oldText.stringByReplacingCharactersInRange(range, withString: string)
@@ -51,29 +44,16 @@ class ListDatailTableViewController: UITableViewController, UITextFieldDelegate,
 //        doneBarButton.enabled = true
         
         return true
-
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if indexPath.section == 1 && indexPath.row == 2 {
-            
-            var cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier("DatePickerCell") as? UITableViewCell
-            if cell == nil {
-                cell = UITableViewCell(style: .Default, reuseIdentifier: "DatePickerCell")
-                cell.selectionStyle = .None
-                
-                let datePicker = UIDatePicker(frame: CGRect(x: 0, y: 0, width: 320, height: 216))
-                datePicker.tag = 100
-                cell.contentView.addSubview(datePicker)
-                
-                datePicker.addTarget(self, action: Selector("dateChanged:"), forControlEvents: .ValueChanged)
-            }
-            return cell
+    override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+        if indexPath.section == 1 {
+            return indexPath
         } else {
-            return super.tableView(tableView, cellForRowAtIndexPath: indexPath)
+            return nil
         }
     }
-    
+
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "PickIcon" {
             let controller = segue.destinationViewController as IconPickerViewcontroller
@@ -116,13 +96,4 @@ class ListDatailTableViewController: UITableViewController, UITextFieldDelegate,
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
-        if indexPath.section == 1 {
-            return indexPath
-        } else {
-            return nil
-        }
-    }
-    
 }
